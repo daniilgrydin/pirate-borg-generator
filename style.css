@@ -1,0 +1,259 @@
+:root {
+  --main-bg: #111;
+  --main-fg: #eee;
+  --accent: #bbb;
+  --accent-dark: #888;
+  --border: #222;
+  --input-bg: #181818;
+  --input-fg: #eee;
+  --input-border: #333;
+  --category-bg: #161616;
+  --category-border: #222;
+  --label-fg: #ccc;
+  --btn-bg: #222;
+  --btn-fg: #eee;
+  --btn-hover-bg: #333;
+  --lock-color: #bbb;
+  --lock-locked: #888;
+  --reroll-color: #bbb;
+  --font-family: 'Segoe UI', 'Arial', sans-serif;
+}
+
+body {
+  background: var(--main-bg);
+  color: var(--main-fg);
+  font-family: var(--font-family);
+  margin: 0;
+  padding: 0 0 2em 0;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 1.3em;
+  color: var(--accent);
+  margin: 1.2em 0 0.5em 0;
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+label[for="generator-selector"] {
+  font-size: 1em;
+  color: var(--label-fg);
+  margin-left: 1em;
+}
+
+#generator-selector {
+  background: var(--input-bg);
+  color: var(--input-fg);
+  border: 1px solid var(--input-border);
+  border-radius: 3px;
+  padding: 0.2em 0.7em 0.2em 0.4em;
+  font-size: 1em;
+  margin: 0.5em 0 1em 0.5em;
+  font-family: var(--font-family);
+  outline: none;
+}
+
+#generator-form {
+  max-width: 700px;
+  margin: 1em auto 0 auto;
+  background: var(--category-bg);
+  border-radius: 6px;
+  box-shadow: 0 1px 6px #0004;
+  padding: 0.7em 0.7em 0.5em 0.7em;
+  border: 1px solid var(--category-border);
+  min-height: 100px;
+}
+
+.gen-category {
+  margin-bottom: 0.7em;
+  padding: 0.5em 0.5em 0.3em 0.5em;
+  background: #141414;
+  border-radius: 4px;
+  border: 1px solid var(--category-border);
+  box-shadow: none;
+}
+
+.gen-category legend {
+  font-size: 1em;
+  color: var(--accent);
+  font-family: var(--font-family);
+  margin-bottom: 0.3em;
+  letter-spacing: 0.01em;
+  padding: 0 0.2em;
+  display: block;
+  font-weight: 600;
+}
+
+.gen-category label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.2em;
+  font-size: 0.98em;
+  color: var(--label-fg);
+  gap: 0.3em;
+  flex-wrap: wrap;
+}
+
+.field-label {
+  min-width: 80px;
+  font-weight: 500;
+  color: var(--label-fg);
+  letter-spacing: 0.01em;
+  font-size: 0.98em;
+  margin-right: 0.2em;
+}
+
+textarea {
+  background: var(--input-bg);
+  color: var(--input-fg);
+  border: 1px solid var(--input-border);
+  border-radius: 3px;
+  font-size: 0.98em;
+  font-family: var(--font-family);
+  padding: 0.2em 0.4em;
+  resize: none;
+  min-width: 90px;
+  max-width: 180px;
+  transition: border 0.2s, box-shadow 0.2s;
+  box-shadow: none;
+  margin-right: 0.2em;
+  margin-bottom: 0;
+  line-height: 1.2;
+}
+
+textarea:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.lock-icon {
+  cursor: pointer;
+  font-size: 1em;
+  margin-left: 0.2em;
+  color: var(--lock-color);
+  user-select: none;
+  transition: color 0.2s;
+}
+
+.lock-icon[data-locked="1"] {
+  color: var(--lock-locked);
+}
+
+.field-reroll {
+  cursor: pointer;
+  font-size: 1em;
+  margin-left: 0.2em;
+  color: var(--reroll-color);
+  transition: color 0.2s, transform 0.2s;
+  user-select: none;
+}
+
+.field-reroll:hover {
+  color: #fff;
+  transform: scale(1.15);
+  text-shadow: none;
+}
+
+button {
+  display: inline-block;
+  margin: 0.5em 0.5em 0.5em 0;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  font-size: 1em;
+  font-family: var(--font-family);
+  font-weight: 500;
+  padding: 0.3em 1.1em;
+  cursor: pointer;
+  box-shadow: none;
+  letter-spacing: 0.01em;
+  transition: background 0.2s, color 0.2s;
+}
+
+button:hover {
+  background: var(--btn-hover-bg);
+  color: #fff;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0.2em;
+  margin: 0.5em 0 1em 0;
+}
+
+.tab-btn {
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  border: 1px solid var(--input-border);
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  font-size: 1em;
+  font-family: var(--font-family);
+  font-weight: 500;
+  padding: 0.3em 1.2em;
+  cursor: pointer;
+  margin: 0;
+  outline: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.tab-btn.active,
+.tab-btn:focus {
+  background: var(--main-bg);
+  color: var(--accent);
+  border-bottom: 2px solid var(--main-bg);
+  z-index: 2;
+}
+
+.tab-btn:not(.active):hover {
+  background: var(--btn-hover-bg);
+  color: #fff;
+}
+
+@media (max-width: 800px) {
+  #generator-form {
+    padding: 0.4em 0.2em 0.4em 0.2em;
+    max-width: 99vw;
+  }
+  .gen-category {
+    padding: 0.3em 0.2em 0.3em 0.2em;
+  }
+  .field-label {
+    min-width: 60px;
+  }
+  textarea {
+    min-width: 60px;
+    max-width: 98vw;
+  }
+}
+
+@media (max-width: 500px) {
+  h1 {
+    font-size: 1em;
+  }
+  .gen-category legend {
+    font-size: 0.95em;
+  }
+  .field-label {
+    font-size: 0.95em;
+    min-width: 40px;
+  }
+  .gen-category label {
+    font-size: 0.95em;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.1em;
+  }
+  textarea {
+    font-size: 0.95em;
+    padding: 0.15em 0.3em;
+  }
+  button {
+    font-size: 0.95em;
+    padding: 0.2em 0.7em;
+  }
+}

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pirate Borg Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Pirate Borg Generator</h1>
+
+  <div style="display: flex; align-items: flex-start; gap: 1em;">
+    <div style="flex: 1;">
+      <div id="generator-tabs" class="tabs">
+        <button class="tab-btn active" data-url="api/generators/npc.php" onclick="selectTab(this)">NPC</button>
+        <button class="tab-btn" data-url="api/generators/ship.php" onclick="selectTab(this)">Ship</button>
+        <button class="tab-btn" data-url="api/generators/alchemy.php" onclick="selectTab(this)">Alchemy</button>
+        <button class="tab-btn" data-url="api/generators/wreckage.php" onclick="selectTab(this)">Derelict</button>
+        <button class="tab-btn" data-url="api/generators/treasure.php" onclick="selectTab(this)">Treasure</button>
+        <button class="tab-btn" data-url="api/generators/quest.php" onclick="selectTab(this)">Quest</button>
+        <button class="tab-btn" data-url="api/generators/relic.php" onclick="selectTab(this)">Ancient Relic</button>
+      </div>
+      <div id="generator-form">Loading...</div>
+    </div>
+    <aside id="saved-panel" style="width: 260px; min-width: 180px; max-width: 320px; background: #181818; border-left: 1px solid #222; padding: 0.7em 0.5em; min-height: 400px; font-size: 0.98em; position: sticky; top: 1em; height: fit-content;">
+      <h3 style="margin-top:0; color: #bbb; font-size:1.1em;">Saved Sheets</h3>
+      <div id="saved-list" style="display: flex; flex-direction: column; gap: 0.4em;"></div>
+      <button id="clear-saves-btn" style="margin-top:1em; background:#222; color:#eee; border:1px solid #333; border-radius:4px; padding:0.2em 0.7em; cursor:pointer;">Clear All</button>
+    </aside>
+  </div>
+
+  <script>
+    let currentTabUrl = "api/generators/npc.php";
+
+    function selectTab(btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTabUrl = btn.getAttribute('data-url');
+      loadGenerator();
+    }
+
+    async function loadGenerator() {
+      const url = currentTabUrl;
+      const res = await fetch(url);
+
+      let data;
+      try {
+        data = await res.json();
+      } catch (e) {
+        const text = await res.text();
+        console.error("Generator returned invalid JSON:\n", text);
+        document.getElementById('generator-form').innerText = "Error: Generator failed";
+        return;
+      }
+
+      const builder = await fetch('api/generator-builder.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      const { html, js } = await builder.json();
+
+      document.getElementById('generator-form').innerHTML = html;
+
+      try {
+        eval(js); // safely define window.reroll
+      } catch (e) {
+        console.error("JS eval failed:", e, js);
+      }
+    }
+
+    // Saved panel logic
+    window.updateSavedPanel = function() {
+      const list = document.getElementById('saved-list');
+      let saves = [];
+      try { saves = JSON.parse(localStorage.getItem('pb_saves') || '[]'); } catch {}
+      list.innerHTML = '';
+      if (!saves.length) {
+        list.innerHTML = "<div style='color:#888;'>No saved sheets.</div>";
+        return;
+      }
+      saves.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.style.cssText = "background:#222; border-radius:3px; padding:0.3em 0.5em; cursor:pointer; border:1px solid #333; color:#eee;";
+        div.title = "Click to load this sheet";
+        div.innerHTML = "<b>" + (item._type || "Unknown") + "</b>: <span style='color:#bbb'>" + (item._preview || "(no preview)") + "</span> <span style='float:right; color:#888; font-size:0.9em; cursor:pointer;' title='Delete' onclick='event.stopPropagation();window.deleteSavedSheet(" + idx + ")'>&#10006;</span>";
+        div.onclick = function() {
+          // Switch to correct tab and load this data
+          const tabBtns = document.querySelectorAll('.tab-btn');
+          let found = false;
+          tabBtns.forEach(btn => {
+            if (btn.dataset.url === item._url) {
+              btn.click();
+              found = true;
+            }
+          });
+          // Wait for generator to load, then set fields
+          setTimeout(() => {
+            if (!item.categories) return;
+            item.categories.forEach((cat, catIdx) => {
+              if (!cat.fields) return;
+              cat.fields.forEach(field => {
+                const input = document.getElementById(field.key + '-input');
+                if (input) {
+                  input.value = field.value;
+                  if (window.autoGrow) window.autoGrow(input);
+                }
+              });
+            });
+          }, found ? 400 : 700);
+        };
+        list.appendChild(div);
+      });
+    };
+
+    window.deleteSavedSheet = function(idx) {
+      let saves = [];
+      try { saves = JSON.parse(localStorage.getItem('pb_saves') || '[]'); } catch {}
+      saves.splice(idx, 1);
+      localStorage.setItem('pb_saves', JSON.stringify(saves));
+      window.updateSavedPanel();
+    };
+
+    document.getElementById('clear-saves-btn').onclick = function() {
+      if (confirm('Clear all saved sheets?')) {
+        localStorage.removeItem('pb_saves');
+        window.updateSavedPanel();
+      }
+    };
+
+    window.onload = function() {
+      loadGenerator();
+      window.updateSavedPanel();
+    };
+  </script>
+</body>
+</html>
